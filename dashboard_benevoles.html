@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard — Grande Rencontre Bonso 2026</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #0e0c2a;
+    font-family: 'Georgia', serif;
+    color: #e8dfc0;
+    min-height: 100vh;
+    padding: 1.5rem;
+  }
+
+  header {
+    text-align: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid rgba(201,168,76,0.2);
+  }
+
+  header h1 {
+    color: #c9a84c;
+    font-size: 1.1rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  header p {
+    color: rgba(232,223,192,0.4);
+    font-size: 0.8rem;
+    margin-top: 0.3rem;
+    font-style: italic;
+  }
+
+  /* STATS */
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+
+  .stat-card {
+    background: #1a1650;
+    border: 1px solid rgba(201,168,76,0.2);
+    border-radius: 12px;
+    padding: 1rem;
+    text-align: center;
+  }
+
+  .stat-val {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #e2c97e;
+    line-height: 1;
+  }
+
+  .stat-val.vert { color: #4ade80; }
+  .stat-val.gris { color: rgba(232,223,192,0.3); }
+
+  .stat-label {
+    font-size: 0.7rem;
+    color: rgba(232,223,192,0.4);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-top: 0.3rem;
+  }
+
+  /* BARRE DE PROGRESSION */
+  .progress-bar-bg {
+    background: rgba(201,168,76,0.1);
+    border-radius: 50px;
+    height: 10px;
+    margin-bottom: 2rem;
+    overflow: hidden;
+  }
+
+  .progress-bar-fill {
+    background: linear-gradient(90deg, #c9a84c, #4ade80);
+    height: 100%;
+    border-radius: 50px;
+    transition: width 0.5s ease;
+  }
+
+  /* LISTE */
+  .section-title {
+    font-size: 0.75rem;
+    color: rgba(201,168,76,0.5);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    margin-bottom: 0.8rem;
+  }
+
+  .liste {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    max-height: 55vh;
+    overflow-y: auto;
+  }
+
+  .liste::-webkit-scrollbar { width: 4px; }
+  .liste::-webkit-scrollbar-track { background: transparent; }
+  .liste::-webkit-scrollbar-thumb { background: rgba(201,168,76,0.3); border-radius: 2px; }
+
+  .item {
+    background: rgba(26, 22, 80, 0.8);
+    border: 1px solid rgba(74,222,128,0.2);
+    border-left: 3px solid #4ade80;
+    border-radius: 8px;
+    padding: 0.7rem 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .item-nom {
+    font-size: 0.95rem;
+    color: #e2c97e;
+    flex: 1;
+  }
+
+  .item-code {
+    font-size: 0.7rem;
+    color: rgba(201,168,76,0.4);
+    font-family: monospace;
+  }
+
+  .item-heure {
+    font-size: 0.9rem;
+    color: #4ade80;
+    font-family: monospace;
+    font-weight: bold;
+    white-space: nowrap;
+  }
+
+  .item-benevole {
+    font-size: 0.7rem;
+    color: rgba(232,223,192,0.3);
+    font-style: italic;
+    white-space: nowrap;
+  }
+
+  /* RAFRAÎCHISSEMENT */
+  .refresh-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+  }
+
+  .last-update {
+    font-size: 0.75rem;
+    color: rgba(232,223,192,0.3);
+    font-style: italic;
+  }
+
+  .btn-refresh {
+    background: none;
+    border: 1px solid rgba(201,168,76,0.3);
+    color: #c9a84c;
+    border-radius: 6px;
+    padding: 0.4rem 0.8rem;
+    font-size: 0.75rem;
+    cursor: pointer;
+    font-family: 'Georgia', serif;
+  }
+  .btn-refresh:hover { background: rgba(201,168,76,0.1); }
+
+  .vide {
+    text-align: center;
+    color: rgba(232,223,192,0.2);
+    font-style: italic;
+    padding: 2rem;
+    font-size: 0.9rem;
+  }
+
+  .spinner-sm {
+    display: inline-block;
+    width: 12px; height: 12px;
+    border: 2px solid rgba(201,168,76,0.2);
+    border-top-color: #c9a84c;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    vertical-align: middle;
+    margin-right: 4px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>✦ Tableau de bord — Accueil Jour J ✦</h1>
+  <p>Grande Rencontre des Bonso de Karan Stafa — 17 Octobre 2026, Bobigny</p>
+</header>
+
+<div class="stats">
+  <div class="stat-card">
+    <div class="stat-val vert" id="stat-valides">—</div>
+    <div class="stat-label">Arrivés</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-val gris" id="stat-restants">—</div>
+    <div class="stat-label">Attendus</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-val" id="stat-pct">—</div>
+    <div class="stat-label">Taux</div>
+  </div>
+</div>
+
+<div class="progress-bar-bg">
+  <div class="progress-bar-fill" id="progress-fill" style="width:0%"></div>
+</div>
+
+<div class="refresh-row">
+  <div class="section-title">Dernières arrivées</div>
+  <div style="display:flex;align-items:center;gap:0.8rem;">
+    <span class="last-update" id="last-update">—</span>
+    <button class="btn-refresh" onclick="charger()">↻ Actualiser</button>
+  </div>
+</div>
+
+<div class="liste" id="liste-arrives">
+  <div class="vide">Chargement…</div>
+</div>
+
+<script>
+// ⚠️ REMPLACE PAR L'URL DE TON APPS SCRIPT DÉPLOYÉ
+const SCRIPT_URL = 'COLLE_ICI_L_URL_DE_TON_APPS_SCRIPT';
+
+async function charger() {
+  try {
+    const res = await fetch(`${SCRIPT_URL}?action=dashboard`);
+    const data = await res.json();
+
+    if (!data.success) return;
+
+    document.getElementById('stat-valides').textContent = data.valides;
+    document.getElementById('stat-restants').textContent = data.restants;
+    document.getElementById('stat-pct').textContent = data.pourcentage + '%';
+    document.getElementById('progress-fill').style.width = data.pourcentage + '%';
+
+    const now = new Date();
+    document.getElementById('last-update').textContent =
+      'Mis à jour à ' + now.toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit', second:'2-digit'});
+
+    const liste = document.getElementById('liste-arrives');
+
+    if (!data.arrives || data.arrives.length === 0) {
+      liste.innerHTML = '<div class="vide">Aucune arrivée pour l\'instant</div>';
+      return;
+    }
+
+    liste.innerHTML = data.arrives.map(a => `
+      <div class="item">
+        <div>
+          <div class="item-nom">${a.nom}</div>
+          <div class="item-code">${a.code}</div>
+        </div>
+        <div style="text-align:right;">
+          <div class="item-heure">${a.heure}</div>
+          <div class="item-benevole">${a.benevole}</div>
+        </div>
+      </div>
+    `).join('');
+
+  } catch (err) {
+    console.error('Erreur dashboard:', err);
+  }
+}
+
+// Lancement + rafraîchissement auto toutes les 15 secondes
+charger();
+setInterval(charger, 15000);
+</script>
+</body>
+</html>
